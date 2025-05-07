@@ -57,7 +57,8 @@ class Box:
         direction = destination - origin
         t = [0.0, 0.0]
         i = 0
-        if origin.x < self.left - self.EPSILON or destination.x < self.left - self.EPSILON:
+        if (origin.x < self.left - self.EPSILON or destination.x < self.left - self.EPSILON) and abs(
+                direction.x) > self.EPSILON:
             t[i] = (self.left - origin.x) / direction.x
             if self.EPSILON < t[i] < 1.0 - self.EPSILON:
                 intersections[i].side = Box.Side.LEFT
@@ -65,7 +66,8 @@ class Box:
                 if self.bottom - self.EPSILON <= intersections[i].point.y <= self.top + self.EPSILON:
                     i += 1
 
-        if origin.x > self.right + self.EPSILON or destination.x > self.right + self.EPSILON:
+        if (origin.x > self.right + self.EPSILON or destination.x > self.right + self.EPSILON) and abs(
+                direction.x) > self.EPSILON:
             t[i] = (self.right - origin.x) / direction.x
             if self.EPSILON < t[i] < 1.0 - self.EPSILON:
                 intersections[i].side = Box.Side.RIGHT
@@ -73,7 +75,8 @@ class Box:
                 if self.bottom - self.EPSILON <= intersections[i].point.y <= self.top + self.EPSILON:
                     i += 1
 
-        if origin.y < self.bottom - self.EPSILON or destination.y < self.bottom - self.EPSILON:
+        if (origin.y < self.bottom - self.EPSILON or destination.y < self.bottom - self.EPSILON) and abs(
+                direction.y) > self.EPSILON:
             t[i] = (self.bottom - origin.y) / direction.y
             if i < 2 and self.EPSILON < t[i] < 1.0 - self.EPSILON:
                 intersections[i].side = Box.Side.BOTTOM
@@ -81,7 +84,8 @@ class Box:
                 if self.left - self.EPSILON <= intersections[i].point.x <= self.right + self.EPSILON:
                     i += 1
 
-        if origin.y > self.top + self.EPSILON or destination.y > self.top + self.EPSILON:
+        if (origin.y > self.top + self.EPSILON or destination.y > self.top + self.EPSILON) and abs(
+                direction.y) > self.EPSILON:
             t[i] = (self.top - origin.y) / direction.y
             if i < 2 and self.EPSILON < t[i] < 1.0 - self.EPSILON:
                 intersections[i].side = Box.Side.TOP

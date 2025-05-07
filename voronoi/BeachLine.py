@@ -81,8 +81,8 @@ class Beachline:
         y.prev = x.prev
         if not self.is_nil(y.prev):
             y.prev.next = y
+        x.prev = y
         y.next = x
-        x.next = y
         self._insert_fixup(y)
 
     def insert_after(self, x: Arc, y: Arc):
@@ -152,7 +152,7 @@ class Beachline:
 
     def _transplant(self, u: Arc, v: Arc):
         if self.is_nil(u.parent):
-            self.root = v
+            self._root = v
         elif u == u.parent.left:
             u.parent.left = v
         else:
@@ -195,10 +195,10 @@ class Beachline:
                     z.parent.color = Arc.Color.BLACK
                     z.parent.parent.color = Arc.Color.RED
                     self._left_rotate(z.parent.parent)
-        self.root.color = Arc.Color.BLACK
+        self._root.color = Arc.Color.BLACK
 
     def _remove_fixup(self, x: Arc):
-        while x != self.root and x.color == Arc.Color.BLACK:
+        while x != self._root and x.color == Arc.Color.BLACK:
             if x == x.parent.left:
                 w = x.parent.right
                 # Case 1
@@ -223,7 +223,7 @@ class Beachline:
                     x.parent.color = Arc.Color.BLACK
                     w.right.color = Arc.Color.BLACK
                     self._left_rotate(x.parent)
-                    x = self.root
+                    x = self._root
             else:
                 w = x.parent.left
                 # Case 1
@@ -248,7 +248,7 @@ class Beachline:
                     x.parent.color = Arc.Color.BLACK
                     w.left.color = Arc.Color.BLACK
                     self._right_rotate(x.parent)
-                    x = self.root
+                    x = self._root
         x.color = Arc.Color.BLACK
 
     def _left_rotate(self, x: Arc):
@@ -258,7 +258,7 @@ class Beachline:
             y.left.parent = x
         y.parent = x.parent
         if self.is_nil(x.parent):
-            self.root = y
+            self._root = y
         elif x == x.parent.left:
             x.parent.left = y
         else:
@@ -273,7 +273,7 @@ class Beachline:
             x.right.parent = y
         x.parent = y.parent
         if self.is_nil(y.parent):
-            self.root = x
+            self._root = x
         elif y == y.parent.left:
             y.parent.left = x
         else:

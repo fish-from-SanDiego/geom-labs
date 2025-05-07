@@ -58,7 +58,6 @@ class FortuneAlgorithm:
         # 2. Найти дугу, над которой появляется сайт
         arc_to_break = self._beachline.locate_arc_above(site.point, self._beachline_y)
         self._delete_event(arc_to_break)
-
         # 3. Разделить дугу и вставить новую
         middle_arc = self._break_arc(arc_to_break, site)
         left_arc = middle_arc.prev
@@ -109,7 +108,6 @@ class FortuneAlgorithm:
         self._beachline.replace(arc, middle_arc)
         self._beachline.insert_before(middle_arc, left_arc)
         self._beachline.insert_after(middle_arc, right_arc)
-
         # 3. Вернуть среднюю дугу
         return middle_arc
 
@@ -201,25 +199,25 @@ class FortuneAlgorithm:
 
     def _compute_convergence_point(self, point1: Vector2, point2: Vector2, point3: Vector2) -> Tuple[float, Vector2]:
         # 1. Вычисляем ортогональные вектора
-        v1 = (point1 - point2).get_orthogonal()
-        v2 = (point2 - point3).get_orthogonal()
+        v1 = (point1 - point2).orthogonal()
+        v2 = (point2 - point3).orthogonal()
 
         # 2. Вычисляем дельту
         delta = 0.5 * (point3 - point1)
 
         # 3. Находим параметр t
-        t = delta.get_det(v2) / v1.get_det(v2)
+        t = delta.det(v2) / v1.det(v2)
 
         # 4. Вычисляем центр
         center = 0.5 * (point1 + point2) + t * v1
 
         # 5. Находим радиус
-        r = center.get_distance(point1)
+        r = center.distance_to(point1)
 
         # 6. Вычисляем y
         y = center.y - r
 
-        return center, y
+        return y, center
 
     def bound(self, box: Box) -> bool:
         # Ensure the bounding box contains all the vertices
@@ -239,7 +237,7 @@ class FortuneAlgorithm:
             right_arc = left_arc.next
             while not self._beachline.is_nil(right_arc):
                 # Bound the edge
-                direction = (left_arc.site.point - right_arc.site.point).get_orthogonal()
+                direction = (left_arc.site.point - right_arc.site.point).orthogonal()
                 origin = (left_arc.site.point + right_arc.site.point) * 0.5
                 # Line-box intersection
                 intersection = box.get_first_intersection(origin, direction)

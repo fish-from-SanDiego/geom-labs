@@ -56,6 +56,9 @@ class VoronoiDiagram:
     def get_site(self, i: int) -> Site:
         return self._sites[i]
 
+    def get_sites(self) -> 'List[Site]':
+        return self._sites
+
     def get_sites_count(self) -> int:
         return len(self._sites)
 
@@ -82,6 +85,7 @@ class VoronoiDiagram:
             incoming_side = outgoing_side = Box.Side.LEFT
 
             while True:
+
                 intersections = [Intersection(), Intersection()]
                 intersections_count = box.get_intersections(
                     half_edge.origin.point,

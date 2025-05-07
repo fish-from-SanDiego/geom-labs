@@ -33,6 +33,7 @@ class PriorityQueue:
             self.update(i)
 
     def print(self, i: int = 0, tabs: str = "") -> None:
+        pass
         if i < len(self._elements):
             print(f"{tabs}{self._elements[i]}")
             self.print(self._get_left_child(i), tabs + "\t")
