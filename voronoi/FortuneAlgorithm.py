@@ -81,7 +81,7 @@ class FortuneAlgorithm:
         # 1. Добавить вершину в диаграмму
         vertex = self._diagram._create_vertex(point)
 
-        # 2. Удалить события, связанные с соседними дугами
+        # 2. Удалить события, связанные с сайтами соседних дуг
         left_arc = arc.prev
         right_arc = arc.next
         self._delete_event(left_arc)
@@ -97,18 +97,18 @@ class FortuneAlgorithm:
             self._add_event(left_arc, right_arc, right_arc.next)
 
     def _break_arc(self, arc: Arc, site: Site):
-        # 1. Создать новое поддерево
+        # 1. Создать новую дугу и разбить старую на 2
         middle_arc = self._beachline.create_arc(site)
         left_arc = self._beachline.create_arc(arc.site)
         left_arc.left_half_edge = arc.left_half_edge
         right_arc = self._beachline.create_arc(arc.site)
         right_arc.right_half_edge = arc.right_half_edge
 
-        # 2. Вставить поддерево в beachline
+        # 2. Вставить в beachline
         self._beachline.replace(arc, middle_arc)
         self._beachline.insert_before(middle_arc, left_arc)
         self._beachline.insert_after(middle_arc, right_arc)
-        # 3. Вернуть среднюю дугу
+        # 3. Вернуть новую дугу
         return middle_arc
 
     # Arcs
@@ -117,7 +117,7 @@ class FortuneAlgorithm:
         self._set_destination(arc.prev, arc, vertex)
         self._set_destination(arc, arc.next, vertex)
 
-        # 2. Соединяем ребра средней дуги
+        # 2. Соединяем ребра
         arc.left_half_edge.next = arc.right_half_edge
         arc.right_half_edge.prev = arc.left_half_edge
 
@@ -162,17 +162,17 @@ class FortuneAlgorithm:
         next_.prev = prev
 
     def _add_event(self, left: Arc, middle: Arc, right: Arc):
-        # 1. Вычисляем точку схождения и координату y
+        # 1.
         y, convergence_point = self._compute_convergence_point(left.site.point, middle.site.point, right.site.point)
 
         # 2. Проверяем, находится ли точка ниже текущего уровня beachline
         is_below = y <= self._beachline_y
 
-        # 3. Проверяем направление движения breakpoints для левой и правой дуги
+        # 3. Смотрим, куда движутся точки пересечений
         left_breakpoint_moving_right = self._is_moving_right(left, middle)
         right_breakpoint_moving_right = self._is_moving_right(middle, right)
 
-        # 4. Получаем начальные координаты x для левой и правой дуги
+        # 4. Получаем начальные координаты x для полурёбер
         left_initial_x = self._get_initial_x(left, middle, left_breakpoint_moving_right)
         right_initial_x = self._get_initial_x(middle, right, right_breakpoint_moving_right)
 
@@ -198,29 +198,24 @@ class FortuneAlgorithm:
             arc.event = None
 
     def _compute_convergence_point(self, point1: Vector2, point2: Vector2, point3: Vector2) -> Tuple[float, Vector2]:
-        # 1. Вычисляем ортогональные вектора
+
         v1 = (point1 - point2).orthogonal()
         v2 = (point2 - point3).orthogonal()
 
-        # 2. Вычисляем дельту
         delta = 0.5 * (point3 - point1)
 
-        # 3. Находим параметр t
         t = delta.det(v2) / v1.det(v2)
 
-        # 4. Вычисляем центр
         center = 0.5 * (point1 + point2) + t * v1
 
-        # 5. Находим радиус
         r = center.distance_to(point1)
 
-        # 6. Вычисляем y
         y = center.y - r
 
         return y, center
 
     def bound(self, box: Box) -> bool:
-        # Ensure the bounding box contains all the vertices
+        # Расширяем box
         for vertex in self._diagram.get_vertices():
             box.left = min(vertex.point.x, box.left)
             box.bottom = min(vertex.point.y, box.bottom)
